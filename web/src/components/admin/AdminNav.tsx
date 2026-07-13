@@ -8,6 +8,7 @@ const items = [
   { href: "/admin/productos", label: "Productos" },
   { href: "/admin/clientes", label: "Clientes" },
   { href: "/admin/formulario", label: "Formulario" },
+  { href: "/admin/ajustes", label: "Ajustes" },
 ];
 
 export default function AdminNav() {
@@ -15,7 +16,7 @@ export default function AdminNav() {
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-30 bg-marfil/95 backdrop-blur border-t border-linea">
-      <div className="mx-auto max-w-3xl grid grid-cols-4">
+      <div className="mx-auto max-w-3xl grid grid-cols-5">
         {items.map((item) => {
           const activo = pathname.startsWith(item.href);
           return (

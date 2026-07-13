@@ -1,6 +1,15 @@
 import Link from "next/link";
 
-export default function Header({ solid = false }: { solid?: boolean }) {
+export default function Header({
+  solid = false,
+  onDark = false,
+}: {
+  solid?: boolean;
+  onDark?: boolean;
+}) {
+  const texto = onDark ? "text-marfil" : "text-tinta";
+  const textoSuave = onDark ? "text-marfil/70 hover:text-marfil" : "text-tinta/70 hover:text-tinta";
+
   return (
     <header
       className={`${
@@ -10,20 +19,26 @@ export default function Header({ solid = false }: { solid?: boolean }) {
       <div className="mx-auto max-w-6xl px-6 py-6 flex items-center justify-between">
         <Link
           href="/"
-          className="font-display text-2xl tracking-[0.35em] uppercase text-tinta"
+          className={`font-display text-2xl tracking-[0.35em] uppercase ${texto}`}
         >
           Étnika
         </Link>
         <nav className="flex items-center gap-8">
           <Link
             href="/#coleccion"
-            className="text-[11px] tracking-[0.25em] uppercase text-tinta/70 hover:text-tinta transition-colors"
+            className={`text-[11px] tracking-[0.25em] uppercase transition-colors ${textoSuave}`}
           >
             Colección
           </Link>
           <Link
+            href="/#nosotras"
+            className={`hidden sm:block text-[11px] tracking-[0.25em] uppercase transition-colors ${textoSuave}`}
+          >
+            Nosotras
+          </Link>
+          <Link
             href="/#contacto"
-            className="hidden sm:block text-[11px] tracking-[0.25em] uppercase text-tinta/70 hover:text-tinta transition-colors"
+            className={`hidden sm:block text-[11px] tracking-[0.25em] uppercase transition-colors ${textoSuave}`}
           >
             Contacto
           </Link>

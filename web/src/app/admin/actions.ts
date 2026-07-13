@@ -150,3 +150,14 @@ export async function eliminarPregunta(id: string) {
   await supabaseAdmin.from("formulario_preguntas").delete().eq("id", id);
   revalidatePath("/admin/formulario");
 }
+
+// ---------- Configuración del sitio ----------
+
+export async function guardarConfiguracion(valores: Record<string, string>) {
+  await verificarSesion();
+  for (const [clave, valor] of Object.entries(valores)) {
+    await supabaseAdmin.from("configuracion").update({ valor }).eq("clave", clave);
+  }
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/ajustes");
+}

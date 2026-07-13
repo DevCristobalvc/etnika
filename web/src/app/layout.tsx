@@ -16,12 +16,14 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "Étnika — Moda y Diseño",
+  title: "Étnika — Moda y Diseño | Accesorios y Marroquinería",
   description:
-    "Accesorios artesanales hechos a mano en Colombia. Collares en semillas naturales, piezas únicas con carácter.",
+    "Marca colombiana de accesorios artesanales exclusivos. Piezas únicas elaboradas a mano que combinan elegancia, sofisticación y personalidad.",
   openGraph: {
     title: "Étnika — Moda y Diseño",
-    description: "Accesorios artesanales hechos a mano en Colombia.",
+    description:
+      "Accesorios artesanales que cuentan historias y hacen brillar tu esencia.",
+    images: ["/portada.jpg"],
     locale: "es_CO",
   },
 };

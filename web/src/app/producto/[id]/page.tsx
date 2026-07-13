@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import PedidoForm from "@/components/PedidoForm";
+import CompraAcciones from "@/components/CompraAcciones";
 import { supabase } from "@/lib/supabase";
-import { formatPrecio, nombreCategoria, WHATSAPP_ERIKA } from "@/lib/format";
+import { obtenerConfig, waLink } from "@/lib/config";
+import { formatPrecio, nombreCategoria } from "@/lib/format";
 import type { Producto, PreguntaFormulario } from "@/lib/types";
 
 export const revalidate = 60;
@@ -17,19 +18,21 @@ export default async function ProductoPage({
 }) {
   const { id } = await params;
 
-  const [{ data: producto }, { data: preguntas }] = await Promise.all([
+  const [{ data: producto }, { data: preguntas }, config] = await Promise.all([
     supabase.from("productos").select("*").eq("id", id).eq("activo", true).maybeSingle(),
     supabase
       .from("formulario_preguntas")
       .select("*")
       .eq("activo", true)
       .order("orden", { ascending: true }),
+    obtenerConfig(),
   ]);
 
   if (!producto) notFound();
   const p = producto as Producto;
 
-  const waTexto = encodeURIComponent(
+  const whatsappUrl = waLink(
+    config.whatsapp,
     `Hola Erika, me interesa el ${p.nombre} (${formatPrecio(p.precio)}).`
   );
 
@@ -87,30 +90,17 @@ export default async function ProductoPage({
             </div>
 
             <div className="mt-12 border-t border-linea pt-10">
-              <h2 className="text-[11px] tracking-[0.35em] uppercase text-piedra mb-8">
-                Realizar pedido
-              </h2>
-              <PedidoForm
+              <CompraAcciones
                 productoId={p.id}
                 preguntas={(preguntas ?? []) as PreguntaFormulario[]}
+                whatsappUrl={whatsappUrl}
               />
-            </div>
-
-            <div className="mt-10 pt-8 border-t border-linea">
-              <a
-                href={`${WHATSAPP_ERIKA}?text=${waTexto}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full text-center border border-tinta px-8 py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-tinta hover:text-marfil transition-colors duration-300"
-              >
-                Hablar con Erika
-              </a>
             </div>
           </div>
         </div>
       </main>
 
-      <Footer />
+      <Footer config={config} />
     </>
   );
 }
