@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { normalizarWhatsapp } from "@/lib/format";
 import type { EstadoPedido } from "@/lib/types";
 
 const ADMIN_USER = "Erika";
@@ -55,6 +56,78 @@ export async function eliminarPedido(id: string) {
   await verificarSesion();
   await supabaseAdmin.from("pedidos").delete().eq("id", id);
   revalidatePath("/admin/pedidos");
+}
+
+export async function crearPedidoManual(datos: {
+  productoId: string;
+  nombre: string;
+  whatsapp: string;
+  cantidad: number;
+  ubicacion: string;
+  notas: string;
+  estado: EstadoPedido;
+}): Promise<{ error: string } | null> {
+  await verificarSesion();
+
+  const nombre = datos.nombre?.trim();
+  const whatsapp = normalizarWhatsapp(datos.whatsapp);
+
+  if (!datos.productoId || !nombre) {
+    return { error: "Selecciona el producto y escribe el nombre." };
+  }
+  if (whatsapp.length < 12) {
+    return { error: "Revisa el número de WhatsApp (10 dígitos)." };
+  }
+  if (!datos.cantidad || datos.cantidad < 1) {
+    return { error: "La cantidad debe ser al menos 1." };
+  }
+
+  const { data: existente } = await supabaseAdmin
+    .from("clientes")
+    .select("id, direcciones")
+    .eq("whatsapp", whatsapp)
+    .maybeSingle();
+
+  let clienteId: string;
+  if (existente) {
+    clienteId = existente.id;
+    const direcciones: string[] = existente.direcciones ?? [];
+    if (datos.ubicacion?.trim() && !direcciones.includes(datos.ubicacion.trim())) {
+      direcciones.push(datos.ubicacion.trim());
+      await supabaseAdmin.from("clientes").update({ direcciones }).eq("id", clienteId);
+    }
+  } else {
+    const { data: nuevo, error } = await supabaseAdmin
+      .from("clientes")
+      .insert({
+        nombre,
+        whatsapp,
+        direcciones: datos.ubicacion?.trim() ? [datos.ubicacion.trim()] : [],
+      })
+      .select("id")
+      .single();
+    if (error || !nuevo) {
+      return { error: "No se pudo registrar el cliente." };
+    }
+    clienteId = nuevo.id;
+  }
+
+  const { error: errPedido } = await supabaseAdmin.from("pedidos").insert({
+    cliente_id: clienteId,
+    producto_id: datos.productoId,
+    cantidad: datos.cantidad,
+    ubicacion_texto: datos.ubicacion?.trim() || null,
+    notas: datos.notas?.trim() || null,
+    respuestas: { Origen: "Pedido manual" },
+    estado: datos.estado,
+  });
+
+  if (errPedido) {
+    return { error: "No se pudo guardar el pedido." };
+  }
+
+  revalidatePath("/admin/pedidos");
+  redirect("/admin/pedidos");
 }
 
 // ---------- Productos ----------

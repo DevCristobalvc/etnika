@@ -13,7 +13,7 @@ function handleInstagram(url: string): string {
 }
 
 export default function Footer({ config = {} }: { config?: ConfigSitio }) {
-  const whatsapp = config.whatsapp ?? "573005412940";
+  const whatsapp = config.whatsapp ?? "573148801409";
   const instagram = config.instagram ?? "https://www.instagram.com/etnika_modaydiseno/";
   const ciudad = config.ciudad ?? "Cali, Colombia";
 

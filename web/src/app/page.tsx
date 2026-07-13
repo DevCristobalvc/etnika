@@ -26,39 +26,44 @@ export default async function Home() {
 
   return (
     <>
-      <Header onDark />
+      <Header />
 
-      {/* Hero — portada de la boutique */}
-      <section className="relative min-h-svh flex items-end">
-        <Image
-          src="/portada.jpg"
-          alt="Erika en la boutique Étnika"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[68%_25%] md:object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-tinta/80 via-tinta/25 to-tinta/30" />
+      {/* Hero — texto editorial y portada completa, sin recortes */}
+      <section className="pt-32 md:pt-40">
+        <div className="mx-auto max-w-6xl px-6 text-center animate-fade-up">
+          <p className="text-[11px] tracking-[0.45em] uppercase text-piedra mb-5">
+            {config.tagline ?? "Accesorios y Marroquinería"}
+          </p>
+          <h1 className="font-display font-light text-6xl md:text-8xl tracking-[0.12em] uppercase leading-none">
+            Étnika
+          </h1>
+          <p className="mt-6 mx-auto max-w-md text-sm md:text-base font-light leading-relaxed text-tinta/70">
+            {config.frase_hero ??
+              "Accesorios artesanales que cuentan historias y hacen brillar tu esencia."}
+          </p>
+          <Link
+            href="#coleccion"
+            className="inline-block mt-10 border border-tinta px-10 py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-tinta hover:text-marfil transition-colors duration-300"
+          >
+            Ver colección
+          </Link>
+        </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-20 md:pb-28">
-          <div className="max-w-xl animate-fade-up">
-            <p className="text-[11px] tracking-[0.45em] uppercase text-marfil/80 mb-5">
-              {config.tagline ?? "Accesorios y Marroquinería"}
-            </p>
-            <h1 className="font-display font-light text-6xl md:text-8xl tracking-[0.12em] uppercase leading-none text-marfil">
-              Étnika
-            </h1>
-            <p className="mt-6 max-w-md text-sm md:text-base font-light leading-relaxed text-marfil/85">
-              {config.frase_hero ??
-                "Accesorios artesanales que cuentan historias y hacen brillar tu esencia."}
-            </p>
-            <Link
-              href="#coleccion"
-              className="inline-block mt-10 border border-marfil/80 px-10 py-4 text-[11px] tracking-[0.3em] uppercase text-marfil hover:bg-marfil hover:text-tinta transition-colors duration-300"
-            >
-              Ver colección
-            </Link>
+        <div className="mx-auto max-w-6xl px-6 mt-14 md:mt-20">
+          {/* Contenedor con el mismo aspecto de la foto: se ve entera */}
+          <div className="relative w-full aspect-[1080/719] bg-crema">
+            <Image
+              src="/portada.jpg"
+              alt="Erika en la boutique Étnika"
+              fill
+              priority
+              sizes="(min-width: 1152px) 1104px, 100vw"
+              className="object-cover"
+            />
           </div>
+          <p className="mt-4 text-center text-[10px] tracking-[0.3em] uppercase text-piedra">
+            Nuestra boutique · {config.ciudad ?? "Cali, Colombia"}
+          </p>
         </div>
       </section>
 

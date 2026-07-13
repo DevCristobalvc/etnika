@@ -43,16 +43,24 @@ export default async function PedidosPage({
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <h1 className="font-display font-light text-3xl">Pedidos</h1>
-        {conteos.todos > 0 && (
-          <a
-            href="/admin/pedidos/export"
-            className="border border-linea px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase text-piedra hover:border-tinta hover:text-tinta transition-colors"
+        <div className="flex items-center gap-2">
+          {conteos.todos > 0 && (
+            <a
+              href="/admin/pedidos/export"
+              className="border border-linea px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase text-piedra hover:border-tinta hover:text-tinta transition-colors"
+            >
+              CSV
+            </a>
+          )}
+          <Link
+            href="/admin/pedidos/nuevo"
+            className="bg-tinta text-marfil px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase hover:bg-carbon transition-colors"
           >
-            Exportar CSV
-          </a>
-        )}
+            Nuevo
+          </Link>
+        </div>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-4 -mx-5 px-5">
