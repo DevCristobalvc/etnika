@@ -1,0 +1,7 @@
+node_modules/
+scraper/ig_session/
+scraper/2fa_code.txt
+scraper/*.png
+.env
+.env.local
+.vercel

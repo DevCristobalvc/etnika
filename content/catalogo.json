@@ -1,0 +1,112 @@
+[
+  {
+    "id": "DaoQL85Orem",
+    "index": 1,
+    "categoria": "collares-perlas",
+    "nombre": "Collar Semillas Rojo",
+    "descripcion": "Collar corto de dos vueltas en semillas naturales crema con cuenta focal roja. Elaborado artesanalmente, ideal para looks casuales y de oficina.",
+    "precio": 85000,
+    "imagen": "productos/collares-perlas/001_DaoQL85Orem.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DaoQL85Orem/",
+    "activo": true
+  },
+  {
+    "id": "DaoQE1dxxDw",
+    "index": 2,
+    "categoria": "collares-largos",
+    "nombre": "Collar Largo Semillas Rojo",
+    "descripcion": "Collar largo de una vuelta en semillas naturales crema con cuenta focal roja. Una pieza que enmarca cualquier escote con carácter.",
+    "precio": 80000,
+    "imagen": "productos/collares-largos/002_DaoQE1dxxDw.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DaoQE1dxxDw/",
+    "activo": true
+  },
+  {
+    "id": "DaoP45kRQG6",
+    "index": 3,
+    "categoria": "collares-perlas",
+    "nombre": "Collar Terracota",
+    "descripcion": "Collar corto de una vuelta en cuentas blancas con piezas terracota intercaladas. El contraste de tonos tierra lo hace versátil para toda ocasión.",
+    "precio": 85000,
+    "imagen": "productos/collares-perlas/003_DaoP45kRQG6.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DaoP45kRQG6/",
+    "activo": true
+  },
+  {
+    "id": "DaoPuYpxQMr",
+    "index": 4,
+    "categoria": "collares-largos",
+    "nombre": "Collar Largo Terracota",
+    "descripcion": "Collar largo en cuentas blancas con piezas terracota como punto focal. Combina perfectamente con tonos neutros y blancos.",
+    "precio": 80000,
+    "imagen": "productos/collares-largos/004_DaoPuYpxQMr.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DaoPuYpxQMr/",
+    "activo": true
+  },
+  {
+    "id": "DaoPXMjxR8n",
+    "index": 5,
+    "categoria": "collares-perlas",
+    "nombre": "Collar Turquesa",
+    "descripcion": "Collar corto multicapa en cuentas blancas con pieza turquesa central. Un toque de color que ilumina cualquier conjunto.",
+    "precio": 90000,
+    "imagen": "productos/collares-perlas/005_DaoPXMjxR8n.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DaoPXMjxR8n/",
+    "activo": true
+  },
+  {
+    "id": "DaoPS0mRVC7",
+    "index": 6,
+    "categoria": "collares-largos",
+    "nombre": "Collar Largo Turquesa",
+    "descripcion": "Collar largo en cuentas crema con cilindro turquesa como elemento focal. Elegante y ligero, pensado para el día a día.",
+    "precio": 80000,
+    "imagen": "productos/collares-largos/006_DaoPS0mRVC7.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DaoPS0mRVC7/",
+    "activo": true
+  },
+  {
+    "id": "DaljvA-PqSQ",
+    "index": 7,
+    "categoria": "collares-multicapa",
+    "nombre": "Collar Multicapa Natural y Turquesa",
+    "descripcion": "Collar de tres capas en semillas crema con cuentas turquesas intercaladas. Volumen y carácter en una sola pieza artesanal.",
+    "precio": 95000,
+    "imagen": "productos/collares-multicapa/007_DaljvA-PqSQ.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DaljvA-PqSQ/",
+    "activo": true
+  },
+  {
+    "id": "DalgSEzvqUM",
+    "index": 8,
+    "categoria": "collares-multicapa",
+    "nombre": "Collar Multicapa Ébano",
+    "descripcion": "Collar de múltiples capas en cuentas pequeñas de madera oscura. Una pieza dramática y sofisticada que habla por sí sola.",
+    "precio": 95000,
+    "imagen": "productos/collares-multicapa/008_DalgSEzvqUM.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DalgSEzvqUM/",
+    "activo": true
+  },
+  {
+    "id": "DagDQmfxqZu",
+    "index": 9,
+    "categoria": "collares-largos",
+    "nombre": "Collar Mariposas",
+    "descripcion": "Collar largo con mariposas y cristales transparentes. Una pieza delicada y femenina para ocasiones especiales.",
+    "precio": 110000,
+    "imagen": "productos/collares-largos/009_DagDQmfxqZu.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DagDQmfxqZu/",
+    "activo": true
+  },
+  {
+    "id": "DagCrkAxZNc",
+    "index": 10,
+    "categoria": "collares-largos",
+    "nombre": "Collar Floral Nacarado",
+    "descripcion": "Collar largo de flores nacaradas y cuentas plateadas. Liviano y luminoso, eleva cualquier look con elegancia discreta.",
+    "precio": 110000,
+    "imagen": "productos/collares-largos/010_DagCrkAxZNc.png",
+    "instagramUrl": "https://www.instagram.com/etnika_modaydiseno/p/DagCrkAxZNc/",
+    "activo": true
+  }
+]

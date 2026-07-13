@@ -1,0 +1,24 @@
+{
+  "name": "etnika",
+  "version": "1.0.0",
+  "description": "Plataforma de catálogo y gestión de pedidos para Etnika, marca de accesorios para mujer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevCristobalvc/etnika.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DevCristobalvc/etnika/issues"
+  },
+  "homepage": "https://github.com/DevCristobalvc/etnika#readme",
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}

@@ -1,0 +1,160 @@
+"use client";
+
+import Image from "next/image";
+import { useState, useTransition } from "react";
+import { cambiarEstadoPedido, eliminarPedido } from "@/app/admin/actions";
+import { formatPrecio, formatFecha } from "@/lib/format";
+import type { Pedido, EstadoPedido } from "@/lib/types";
+
+const ESTADOS: { valor: EstadoPedido; label: string; clase: string }[] = [
+  { valor: "pendiente", label: "Pendiente", clase: "bg-[#f5e9d4] text-[#8a6d3b]" },
+  { valor: "en_preparacion", label: "En preparación", clase: "bg-[#e3ebf3] text-[#3b5a7a]" },
+  { valor: "entregado", label: "Entregado", clase: "bg-[#e5efe2] text-[#4a6d45]" },
+  { valor: "cancelado", label: "Cancelado", clase: "bg-[#f3e3e3] text-[#8a4444]" },
+];
+
+export default function PedidoCard({ pedido }: { pedido: Pedido }) {
+  const [abierto, setAbierto] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
+  const [pendiente, startTransition] = useTransition();
+
+  const estadoActual = ESTADOS.find((e) => e.valor === pedido.estado) ?? ESTADOS[0];
+  const wa = pedido.cliente?.whatsapp?.replace(/[^\d]/g, "");
+
+  return (
+    <div className="border border-linea bg-white/60">
+      <button
+        onClick={() => setAbierto((v) => !v)}
+        className="w-full text-left px-5 py-4 flex items-center gap-4"
+      >
+        {pedido.producto?.imagen && (
+          <div className="relative h-14 w-14 shrink-0 bg-crema overflow-hidden">
+            <Image
+              src={pedido.producto.imagen}
+              alt=""
+              fill
+              sizes="56px"
+              className="object-cover"
+            />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-base leading-tight truncate">
+            {pedido.producto?.nombre ?? "Producto eliminado"}
+          </p>
+          <p className="text-xs text-piedra mt-0.5 truncate">
+            {pedido.cliente?.nombre ?? "—"} · {formatFecha(pedido.created_at)}
+          </p>
+        </div>
+        <span
+          className={`shrink-0 px-3 py-1.5 text-[9px] tracking-[0.15em] uppercase ${estadoActual.clase}`}
+        >
+          {estadoActual.label}
+        </span>
+      </button>
+
+      {abierto && (
+        <div className="border-t border-linea px-5 py-5 space-y-4 text-sm">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Cantidad</p>
+              <p>{pedido.cantidad}</p>
+            </div>
+            <div>
+              <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Total</p>
+              <p>
+                {pedido.producto
+                  ? formatPrecio(pedido.producto.precio * pedido.cantidad)
+                  : "—"}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Entrega</p>
+            <p className="font-light">{pedido.ubicacion_texto ?? "—"}</p>
+            {pedido.ubicacion_lat && pedido.ubicacion_lng && (
+              <a
+                href={`https://www.google.com/maps?q=${pedido.ubicacion_lat},${pedido.ubicacion_lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] tracking-[0.15em] uppercase underline underline-offset-4 text-piedra hover:text-tinta"
+              >
+                Ver en mapa
+              </a>
+            )}
+          </div>
+
+          {pedido.notas && (
+            <div>
+              <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Notas</p>
+              <p className="font-light">{pedido.notas}</p>
+            </div>
+          )}
+
+          <div>
+            <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-2">Estado</p>
+            <div className="flex flex-wrap gap-2">
+              {ESTADOS.map((e) => (
+                <button
+                  key={e.valor}
+                  disabled={pendiente || e.valor === pedido.estado}
+                  onClick={() =>
+                    startTransition(() => cambiarEstadoPedido(pedido.id, e.valor))
+                  }
+                  className={`px-3 py-2 text-[9px] tracking-[0.15em] uppercase border transition-colors ${
+                    e.valor === pedido.estado
+                      ? "bg-tinta text-marfil border-tinta"
+                      : "border-linea text-piedra hover:border-tinta hover:text-tinta"
+                  } disabled:opacity-60`}
+                >
+                  {e.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-3 border-t border-linea">
+            {wa ? (
+              <a
+                href={`https://wa.me/${wa.startsWith("57") ? wa : "57" + wa}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-tinta text-marfil px-5 py-3 text-[10px] tracking-[0.2em] uppercase hover:bg-carbon transition-colors"
+              >
+                WhatsApp
+              </a>
+            ) : (
+              <span />
+            )}
+
+            {confirmando ? (
+              <span className="flex items-center gap-3">
+                <button
+                  onClick={() => startTransition(() => eliminarPedido(pedido.id))}
+                  disabled={pendiente}
+                  className="text-[10px] tracking-[0.15em] uppercase text-red-700 underline underline-offset-4"
+                >
+                  Confirmar
+                </button>
+                <button
+                  onClick={() => setConfirmando(false)}
+                  className="text-[10px] tracking-[0.15em] uppercase text-piedra"
+                >
+                  Cancelar
+                </button>
+              </span>
+            ) : (
+              <button
+                onClick={() => setConfirmando(true)}
+                className="text-[10px] tracking-[0.15em] uppercase text-piedra hover:text-red-700 transition-colors"
+              >
+                Eliminar
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,63 +1,47 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { login } from "./actions";
 
 export default function AdminLogin() {
-  const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username === "Erika" && password === "erika123") {
-      document.cookie = "admin_session=1; path=/";
-      router.push("/admin/pedidos");
-    } else {
-      setError("Credenciales incorrectas.");
-    }
-  };
+  const [estado, accion, pendiente] = useActionState(login, null);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
-      <div className="w-full max-w-sm px-8">
-        <h1
-          className="text-3xl font-light tracking-[0.25em] text-[#1a1a1a] uppercase mb-10 text-center"
-          style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-        >
+    <main className="min-h-svh flex items-center justify-center bg-marfil px-6">
+      <div className="w-full max-w-sm">
+        <p className="text-center text-[10px] tracking-[0.4em] uppercase text-piedra mb-3">
+          Panel privado
+        </p>
+        <h1 className="font-display text-4xl font-light tracking-[0.25em] uppercase text-center mb-14">
           Étnika
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <input
-              type="text"
-              placeholder="Usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full border-b border-[#c8bfb0] bg-transparent py-3 text-sm text-[#1a1a1a] placeholder-[#a89f96] focus:outline-none focus:border-[#1a1a1a] transition-colors"
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border-b border-[#c8bfb0] bg-transparent py-3 text-sm text-[#1a1a1a] placeholder-[#a89f96] focus:outline-none focus:border-[#1a1a1a] transition-colors"
-            />
-          </div>
+        <form action={accion} className="space-y-6">
+          <input
+            type="text"
+            name="usuario"
+            placeholder="Usuario"
+            autoComplete="username"
+            className="input-line"
+          />
+          <input
+            type="password"
+            name="clave"
+            placeholder="Contraseña"
+            autoComplete="current-password"
+            className="input-line"
+          />
 
-          {error && (
-            <p className="text-xs text-red-500 pt-1">{error}</p>
+          {estado?.error && (
+            <p className="text-xs text-red-600 pt-1">{estado.error}</p>
           )}
 
           <button
             type="submit"
-            className="w-full mt-6 py-3 text-xs tracking-[0.2em] uppercase text-[#FAF8F5] bg-[#1a1a1a] hover:bg-[#333] transition-colors"
+            disabled={pendiente}
+            className="w-full mt-4 py-4 text-[11px] tracking-[0.3em] uppercase text-marfil bg-tinta hover:bg-carbon transition-colors disabled:opacity-50"
           >
-            Ingresar
+            {pendiente ? "Verificando…" : "Ingresar"}
           </button>
         </form>
       </div>
