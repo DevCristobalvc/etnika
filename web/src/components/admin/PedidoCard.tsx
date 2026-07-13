@@ -92,6 +92,16 @@ export default function PedidoCard({ pedido }: { pedido: Pedido }) {
             </div>
           )}
 
+          {pedido.respuestas &&
+            Object.entries(pedido.respuestas).map(([pregunta, respuesta]) => (
+              <div key={pregunta}>
+                <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">
+                  {pregunta}
+                </p>
+                <p className="font-light">{respuesta}</p>
+              </div>
+            ))}
+
           <div>
             <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-2">Estado</p>
             <div className="flex flex-wrap gap-2">

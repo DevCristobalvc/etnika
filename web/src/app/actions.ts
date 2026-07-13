@@ -1,6 +1,7 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { normalizarWhatsapp } from "@/lib/format";
 
 export type ResultadoPedido =
   | { ok: true; pedidoId: string }
@@ -20,10 +21,13 @@ export async function crearPedido(
   }
 ): Promise<ResultadoPedido> {
   const nombre = datos.nombre?.trim();
-  const whatsapp = datos.whatsapp?.replace(/[^\d+]/g, "");
+  const whatsapp = normalizarWhatsapp(datos.whatsapp);
 
-  if (!nombre || !whatsapp || !datos.ubicacion?.trim()) {
+  if (!nombre || !datos.ubicacion?.trim()) {
     return { ok: false, error: "Completa los campos obligatorios." };
+  }
+  if (whatsapp.length < 12) {
+    return { ok: false, error: "Revisa el número de WhatsApp (10 dígitos)." };
   }
   if (!datos.cantidad || datos.cantidad < 1) {
     return { ok: false, error: "La cantidad debe ser al menos 1." };

@@ -8,9 +8,11 @@ import type { PreguntaFormulario } from "@/lib/types";
 export default function PedidoForm({
   productoId,
   preguntas,
+  whatsappUrl,
 }: {
   productoId: string;
   preguntas: PreguntaFormulario[];
+  whatsappUrl?: string;
 }) {
   const [valores, setValores] = useState<Record<string, string>>({});
   const [cantidad, setCantidad] = useState(1);
@@ -43,13 +45,20 @@ export default function PedidoForm({
     e.preventDefault();
     setError("");
 
-    const porTipo = (tipo: string) =>
-      preguntas.filter((q) => q.tipo === tipo).map((q) => valores[q.id] ?? "");
+    // La primera pregunta de cada tipo estándar alimenta el campo fijo;
+    // el resto se guarda como respuestas adicionales visibles en el admin.
+    const usadas = new Set<string>();
+    const primeraPorTipo = (tipo: string) => {
+      const q = preguntas.find((p) => p.tipo === tipo);
+      if (!q) return "";
+      usadas.add(q.id);
+      return valores[q.id] ?? "";
+    };
 
-    const nombre = porTipo("text")[0] ?? "";
-    const whatsapp = porTipo("tel")[0] ?? "";
-    const ubicacion = porTipo("map")[0] ?? "";
-    const notas = porTipo("textarea")[0] ?? "";
+    const nombre = primeraPorTipo("text");
+    const whatsapp = primeraPorTipo("tel");
+    const ubicacion = primeraPorTipo("map");
+    const notas = primeraPorTipo("textarea");
 
     for (const q of preguntas) {
       if (q.obligatorio && q.tipo !== "number" && !(valores[q.id] ?? "").trim()) {
@@ -60,7 +69,9 @@ export default function PedidoForm({
 
     const extras: Record<string, string> = {};
     preguntas.forEach((q) => {
-      if (valores[q.id]) extras[q.label] = valores[q.id];
+      if (!usadas.has(q.id) && q.tipo !== "number" && valores[q.id]) {
+        extras[q.label] = valores[q.id];
+      }
     });
 
     startTransition(async () => {
@@ -91,7 +102,7 @@ export default function PedidoForm({
           la entrega.
         </p>
         <a
-          href={WHATSAPP_ERIKA}
+          href={whatsappUrl ?? WHATSAPP_ERIKA}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block mt-8 bg-tinta text-marfil px-10 py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-carbon transition-colors"

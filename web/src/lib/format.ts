@@ -27,3 +27,12 @@ export function nombreCategoria(slug: string): string {
 
 export const WHATSAPP_ERIKA = "https://wa.me/573005412940";
 export const INSTAGRAM_URL = "https://www.instagram.com/etnika_modaydiseno/";
+
+// Canonicaliza un número colombiano a "57XXXXXXXXXX" para usarlo como
+// identificador único del cliente sin importar cómo lo escriba.
+export function normalizarWhatsapp(raw: string): string {
+  let d = (raw ?? "").replace(/\D/g, "");
+  if (d.startsWith("0057")) d = d.slice(4);
+  if (d.length === 10 && d.startsWith("3")) d = "57" + d;
+  return d;
+}

@@ -5,3 +5,4 @@ scraper/*.png
 .env
 .env.local
 .vercel
+scraper/review/

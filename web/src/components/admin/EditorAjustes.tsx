@@ -50,11 +50,11 @@ export default function EditorAjustes({ filas }: { filas: FilaConfig[] }) {
         </div>
       ))}
 
-      <div className="sticky bottom-24 pt-2">
+      <div className="sticky bottom-[72px] -mx-5 px-5 py-3 bg-marfil border-t border-linea">
         <button
           onClick={guardar}
           disabled={pendiente || !tocado}
-          className="w-full bg-tinta text-marfil py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-carbon transition-colors disabled:opacity-50 shadow-lg"
+          className="w-full bg-tinta text-marfil py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-carbon transition-colors disabled:opacity-40"
         >
           {pendiente ? "Publicando…" : guardado ? "Cambios publicados" : "Guardar y publicar"}
         </button>

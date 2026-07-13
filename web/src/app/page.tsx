@@ -36,7 +36,7 @@ export default async function Home() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[70%_center] md:object-center"
+          className="object-cover object-[68%_25%] md:object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-tinta/80 via-tinta/25 to-tinta/30" />
 

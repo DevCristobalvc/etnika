@@ -34,7 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${cormorant.variable} ${jost.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      className={`${cormorant.variable} ${jost.variable} h-full antialiased scroll-smooth`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

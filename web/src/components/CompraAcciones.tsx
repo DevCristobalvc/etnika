@@ -66,7 +66,11 @@ export default function CompraAcciones({
           Volver
         </button>
       </div>
-      <PedidoForm productoId={productoId} preguntas={preguntas} />
+      <PedidoForm
+        productoId={productoId}
+        preguntas={preguntas}
+        whatsappUrl={whatsappUrl}
+      />
     </div>
   );
 }

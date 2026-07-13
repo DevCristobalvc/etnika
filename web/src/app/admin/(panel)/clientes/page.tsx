@@ -21,7 +21,17 @@ export default async function ClientesPage() {
 
   return (
     <>
-      <h1 className="font-display font-light text-3xl mb-6">Clientes</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="font-display font-light text-3xl">Clientes</h1>
+        {clientes.length > 0 && (
+          <a
+            href="/admin/clientes/export"
+            className="border border-linea px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase text-piedra hover:border-tinta hover:text-tinta transition-colors"
+          >
+            Exportar CSV
+          </a>
+        )}
+      </div>
 
       {clientes.length === 0 ? (
         <div className="border border-linea bg-crema/40 px-6 py-16 text-center">
