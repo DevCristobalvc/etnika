@@ -34,7 +34,7 @@ export default async function ColeccionPage({
     <>
       <Header solid />
 
-      <main className="mx-auto max-w-6xl px-6 py-12 md:py-16 min-h-[60svh]">
+      <main className="w-full mx-auto max-w-6xl px-6 py-12 md:py-16 min-h-[60svh]">
         <p className="text-[11px] tracking-[0.4em] uppercase text-piedra mb-3">
           {productos.length} pieza{productos.length === 1 ? "" : "s"}
         </p>

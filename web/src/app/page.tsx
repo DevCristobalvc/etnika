@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { supabase } from "@/lib/supabase";
@@ -31,14 +30,9 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
-
-      {/* Hero — texto editorial y portada completa, sin recortes */}
-      <section className="pt-28 md:pt-32">
+      {/* Hero — sin header: el título es el protagonista */}
+      <section className="pt-16 md:pt-24">
         <div className="mx-auto max-w-6xl px-6 text-center animate-fade-up">
-          <p className="text-[11px] tracking-[0.45em] uppercase text-piedra mb-5">
-            {config.tagline ?? "Accesorios y Marroquinería"}
-          </p>
           <h1 className="font-display font-light text-6xl md:text-8xl tracking-[0.12em] uppercase leading-none">
             Étnika
           </h1>

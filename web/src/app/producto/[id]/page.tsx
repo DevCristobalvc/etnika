@@ -47,7 +47,7 @@ export default async function ProductoPage({
     <>
       <Header solid />
 
-      <main className="mx-auto max-w-6xl px-6 py-10 md:py-16">
+      <main className="w-full mx-auto max-w-6xl px-6 py-10 md:py-16">
         <nav className="mb-10 text-[11px] tracking-[0.25em] uppercase text-piedra">
           <Link href="/" className="hover:text-tinta transition-colors">
             Inicio

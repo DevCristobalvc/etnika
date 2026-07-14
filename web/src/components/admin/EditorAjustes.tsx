@@ -39,6 +39,22 @@ export default function EditorAjustes({ filas }: { filas: FilaConfig[] }) {
               onChange={(e) => setValor(f.clave, e.target.value)}
               className="input-line resize-none border border-linea px-3 py-3 text-sm leading-relaxed"
             />
+          ) : f.tipo === "color" ? (
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={valores[f.clave] || "#ffffff"}
+                onChange={(e) => setValor(f.clave, e.target.value)}
+                className="h-11 w-16 cursor-pointer border border-linea bg-transparent p-1"
+              />
+              <input
+                type="text"
+                value={valores[f.clave] ?? ""}
+                onChange={(e) => setValor(f.clave, e.target.value)}
+                placeholder="#fbf9f5"
+                className="input-line max-w-[140px]"
+              />
+            </div>
           ) : (
             <input
               type={f.tipo}

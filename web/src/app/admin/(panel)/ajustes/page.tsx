@@ -7,7 +7,7 @@ export type FilaConfig = {
   clave: string;
   valor: string;
   etiqueta: string;
-  tipo: "text" | "textarea" | "tel" | "url";
+  tipo: "text" | "textarea" | "tel" | "url" | "color";
   orden: number;
 };
 
