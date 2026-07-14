@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { entrarConMagicLink } from "../actions";
 
 export default function AdminCallback() {
-  const router = useRouter();
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -32,15 +30,15 @@ export default function AdminCallback() {
         if (res?.error) {
           setError(res.error);
         } else {
-          // Limpia el token de la URL y entra al panel.
-          window.history.replaceState(null, "", "/admin/callback");
-          router.replace("/admin/pedidos");
+          // Navegación dura: garantiza que la cookie de sesión recién puesta
+          // viaje con la petición y el proxy dé acceso al panel.
+          window.location.replace("/admin/pedidos");
         }
       } catch {
         setError("No pudimos verificar tu acceso. Intenta de nuevo.");
       }
     })();
-  }, [router]);
+  }, []);
 
   return (
     <main className="min-h-svh flex items-center justify-center bg-marfil px-6 text-center">
