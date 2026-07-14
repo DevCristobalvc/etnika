@@ -2,6 +2,62 @@
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { normalizarWhatsapp } from "@/lib/format";
+import {
+  BOLD_IDENTITY_KEY,
+  BOLD_MONEDA,
+  aCentavos,
+  firmaIntegridad,
+} from "@/lib/bold";
+
+export type DatosPagoBold =
+  | {
+      ok: true;
+      orderId: string;
+      montoCentavos: number;
+      moneda: string;
+      firma: string;
+      apiKey: string;
+      descripcion: string;
+      urlRedireccion: string;
+    }
+  | { ok: false; error: string };
+
+export async function datosPagoBold(pedidoId: string): Promise<DatosPagoBold> {
+  const { data: pedido } = await supabaseAdmin
+    .from("pedidos")
+    .select("id, cantidad, producto:productos(nombre, precio)")
+    .eq("id", pedidoId)
+    .maybeSingle();
+
+  const productoRaw = (pedido?.producto ?? null) as unknown;
+  const producto = (
+    Array.isArray(productoRaw) ? productoRaw[0] : productoRaw
+  ) as { nombre: string; precio: number } | null;
+  if (!pedido || !producto) {
+    return { ok: false, error: "No se encontró el pedido." };
+  }
+  if (!BOLD_IDENTITY_KEY) {
+    return { ok: false, error: "Pagos en línea no disponibles por ahora." };
+  }
+
+  const total = producto.precio * pedido.cantidad;
+  const montoCentavos = aCentavos(total);
+  const firma = firmaIntegridad(pedido.id, montoCentavos);
+
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://etnikamoda.com";
+
+  return {
+    ok: true,
+    orderId: pedido.id,
+    montoCentavos,
+    moneda: BOLD_MONEDA,
+    firma,
+    apiKey: BOLD_IDENTITY_KEY,
+    descripcion: `${producto.nombre} x${pedido.cantidad}`.slice(0, 100),
+    urlRedireccion: `${base}/pago/${pedido.id}`,
+  };
+}
 
 export type ResultadoPedido =
   | { ok: true; pedidoId: string }

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { crearPedido } from "@/app/actions";
 import { WHATSAPP_ERIKA } from "@/lib/format";
+import BotonBold from "@/components/BotonBold";
 import type { PreguntaFormulario } from "@/lib/types";
 
 export default function PedidoForm({
@@ -20,6 +21,7 @@ export default function PedidoForm({
   const [geoEstado, setGeoEstado] = useState<"idle" | "buscando" | "ok" | "error">("idle");
   const [error, setError] = useState("");
   const [exito, setExito] = useState(false);
+  const [pedidoId, setPedidoId] = useState<string | null>(null);
   const [pendiente, startTransition] = useTransition();
 
   const setValor = (id: string, v: string) =>
@@ -86,6 +88,7 @@ export default function PedidoForm({
         respuestas: extras,
       });
       if (res.ok) {
+        setPedidoId(res.pedidoId);
         setExito(true);
       } else {
         setError(res.error);
@@ -98,16 +101,29 @@ export default function PedidoForm({
       <div className="border border-linea bg-crema/50 px-8 py-12 text-center">
         <p className="font-display font-light text-3xl">Pedido recibido</p>
         <p className="mt-4 text-sm font-light text-tinta/70 leading-relaxed max-w-xs mx-auto">
-          Erika revisará tu pedido y te contactará por WhatsApp para coordinar
-          la entrega.
+          Elige cómo continuar: paga en línea de forma segura o coordina la
+          entrega y el pago directamente con Erika.
         </p>
+
+        {pedidoId && (
+          <div className="mt-8">
+            <BotonBold pedidoId={pedidoId} />
+          </div>
+        )}
+
+        <div className="mt-6 flex items-center gap-4">
+          <span className="h-px flex-1 bg-linea" />
+          <span className="text-[9px] tracking-[0.25em] uppercase text-piedra">o</span>
+          <span className="h-px flex-1 bg-linea" />
+        </div>
+
         <a
           href={whatsappUrl ?? WHATSAPP_ERIKA}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block mt-8 bg-tinta text-marfil px-10 py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-carbon transition-colors"
+          className="inline-block mt-6 border border-tinta px-10 py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-tinta hover:text-marfil transition-colors"
         >
-          Escribir a Erika
+          Coordinar con Erika
         </a>
       </div>
     );

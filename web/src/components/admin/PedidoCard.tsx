@@ -63,11 +63,23 @@ export default function PedidoCard({ pedido }: { pedido: Pedido }) {
             {pedido.cliente?.nombre ?? "—"} · {formatFecha(pedido.created_at)}
           </p>
         </div>
-        <span
-          className={`shrink-0 px-3 py-1.5 text-[9px] tracking-[0.15em] uppercase ${estadoActual.clase}`}
-        >
-          {estadoActual.label}
-        </span>
+        <div className="shrink-0 flex flex-col items-end gap-1">
+          <span
+            className={`px-3 py-1.5 text-[9px] tracking-[0.15em] uppercase ${estadoActual.clase}`}
+          >
+            {estadoActual.label}
+          </span>
+          {pedido.pago_estado === "pagado" && (
+            <span className="px-2 py-1 text-[8px] tracking-[0.15em] uppercase bg-[#e5efe2] text-[#4a6d45]">
+              Pagado{pedido.metodo_pago ? ` · ${pedido.metodo_pago}` : ""}
+            </span>
+          )}
+          {pedido.pago_estado === "rechazado" && (
+            <span className="px-2 py-1 text-[8px] tracking-[0.15em] uppercase bg-[#f3e3e3] text-[#8a4444]">
+              Pago rechazado
+            </span>
+          )}
+        </div>
       </button>
 
       {abierto && (

@@ -33,6 +33,8 @@ export type Pedido = {
   notas: string | null;
   respuestas: Record<string, string>;
   estado: EstadoPedido;
+  pago_estado: "no_pagado" | "pagado" | "rechazado";
+  metodo_pago: string | null;
   created_at: string;
   cliente?: Cliente | null;
   producto?: Producto | null;
