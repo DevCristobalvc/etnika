@@ -126,6 +126,24 @@ export default function ProductoForm({ producto }: { producto?: Producto }) {
         </div>
       </div>
 
+      <div>
+        <label className="block text-[10px] tracking-[0.25em] uppercase text-piedra mb-1">
+          Stock (unidades disponibles)
+        </label>
+        <input
+          type="number"
+          name="stock"
+          min={0}
+          defaultValue={producto?.stock ?? ""}
+          placeholder="Vacío = sin control de stock"
+          className="input-line"
+        />
+        <p className="mt-2 text-[10px] text-piedra">
+          Si lo dejas vacío, la pieza siempre aparece disponible. Con 0 se
+          muestra como agotada.
+        </p>
+      </div>
+
       <label className="flex items-center gap-3 text-sm font-light">
         <input
           type="checkbox"

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useTransition } from "react";
-import { cambiarEstadoPedido, eliminarPedido } from "@/app/admin/actions";
+import { cambiarEstadoPedido, eliminarPedido, actualizarPedido } from "@/app/admin/actions";
 import { formatPrecio, formatFecha } from "@/lib/format";
 import type { Pedido, EstadoPedido } from "@/lib/types";
 
@@ -16,10 +16,27 @@ const ESTADOS: { valor: EstadoPedido; label: string; clase: string }[] = [
 export default function PedidoCard({ pedido }: { pedido: Pedido }) {
   const [abierto, setAbierto] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
+  const [editando, setEditando] = useState(false);
+  const [cantidad, setCantidad] = useState(pedido.cantidad);
+  const [ubicacion, setUbicacion] = useState(pedido.ubicacion_texto ?? "");
+  const [notas, setNotas] = useState(pedido.notas ?? "");
+  const [error, setError] = useState("");
   const [pendiente, startTransition] = useTransition();
 
   const estadoActual = ESTADOS.find((e) => e.valor === pedido.estado) ?? ESTADOS[0];
   const wa = pedido.cliente?.whatsapp?.replace(/[^\d]/g, "");
+
+  const guardarEdicion = () => {
+    setError("");
+    startTransition(async () => {
+      const res = await actualizarPedido(pedido.id, { cantidad, ubicacion, notas });
+      if (res?.error) {
+        setError(res.error);
+      } else {
+        setEditando(false);
+      }
+    });
+  };
 
   return (
     <div className="border border-linea bg-white/60">
@@ -55,41 +72,104 @@ export default function PedidoCard({ pedido }: { pedido: Pedido }) {
 
       {abierto && (
         <div className="border-t border-linea px-5 py-5 space-y-4 text-sm">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Cantidad</p>
-              <p>{pedido.cantidad}</p>
+          {editando ? (
+            <div className="space-y-4">
+              <div>
+                <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-2">Cantidad</p>
+                <div className="inline-flex items-center border border-linea">
+                  <button
+                    type="button"
+                    onClick={() => setCantidad((c) => Math.max(1, c - 1))}
+                    className="px-4 py-2 text-lg font-light hover:bg-crema transition-colors"
+                    aria-label="Disminuir cantidad"
+                  >
+                    −
+                  </button>
+                  <span className="w-10 text-center text-sm">{cantidad}</span>
+                  <button
+                    type="button"
+                    onClick={() => setCantidad((c) => c + 1)}
+                    className="px-4 py-2 text-lg font-light hover:bg-crema transition-colors"
+                    aria-label="Aumentar cantidad"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div>
+                <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Entrega</p>
+                <input
+                  type="text"
+                  value={ubicacion}
+                  onChange={(e) => setUbicacion(e.target.value)}
+                  className="input-line"
+                />
+              </div>
+              <div>
+                <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Notas</p>
+                <textarea
+                  rows={2}
+                  value={notas}
+                  onChange={(e) => setNotas(e.target.value)}
+                  className="input-line resize-none"
+                />
+              </div>
+              {error && <p className="text-xs text-red-600">{error}</p>}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={guardarEdicion}
+                  disabled={pendiente}
+                  className="flex-1 bg-tinta text-marfil py-3 text-[10px] tracking-[0.25em] uppercase hover:bg-carbon transition-colors disabled:opacity-50"
+                >
+                  {pendiente ? "Guardando…" : "Guardar"}
+                </button>
+                <button
+                  onClick={() => setEditando(false)}
+                  className="px-4 py-3 border border-linea text-[10px] tracking-[0.25em] uppercase text-piedra hover:border-tinta hover:text-tinta transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
             </div>
-            <div>
-              <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Total</p>
-              <p>
-                {pedido.producto
-                  ? formatPrecio(pedido.producto.precio * pedido.cantidad)
-                  : "—"}
-              </p>
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Cantidad</p>
+                  <p>{pedido.cantidad}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Total</p>
+                  <p>
+                    {pedido.producto
+                      ? formatPrecio(pedido.producto.precio * pedido.cantidad)
+                      : "—"}
+                  </p>
+                </div>
+              </div>
 
-          <div>
-            <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Entrega</p>
-            <p className="font-light">{pedido.ubicacion_texto ?? "—"}</p>
-            {pedido.ubicacion_lat && pedido.ubicacion_lng && (
-              <a
-                href={`https://www.google.com/maps?q=${pedido.ubicacion_lat},${pedido.ubicacion_lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[10px] tracking-[0.15em] uppercase underline underline-offset-4 text-piedra hover:text-tinta"
-              >
-                Ver en mapa
-              </a>
-            )}
-          </div>
+              <div>
+                <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Entrega</p>
+                <p className="font-light">{pedido.ubicacion_texto ?? "—"}</p>
+                {pedido.ubicacion_lat && pedido.ubicacion_lng && (
+                  <a
+                    href={`https://www.google.com/maps?q=${pedido.ubicacion_lat},${pedido.ubicacion_lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] tracking-[0.15em] uppercase underline underline-offset-4 text-piedra hover:text-tinta"
+                  >
+                    Ver en mapa
+                  </a>
+                )}
+              </div>
 
-          {pedido.notas && (
-            <div>
-              <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Notas</p>
-              <p className="font-light">{pedido.notas}</p>
-            </div>
+              {pedido.notas && (
+                <div>
+                  <p className="text-[9px] tracking-[0.2em] uppercase text-piedra mb-1">Notas</p>
+                  <p className="font-light">{pedido.notas}</p>
+                </div>
+              )}
+            </>
           )}
 
           {pedido.respuestas &&
@@ -155,12 +235,22 @@ export default function PedidoCard({ pedido }: { pedido: Pedido }) {
                 </button>
               </span>
             ) : (
-              <button
-                onClick={() => setConfirmando(true)}
-                className="text-[10px] tracking-[0.15em] uppercase text-piedra hover:text-red-700 transition-colors"
-              >
-                Eliminar
-              </button>
+              <span className="flex items-center gap-5">
+                {!editando && (
+                  <button
+                    onClick={() => setEditando(true)}
+                    className="text-[10px] tracking-[0.15em] uppercase text-piedra hover:text-tinta transition-colors underline underline-offset-4"
+                  >
+                    Editar
+                  </button>
+                )}
+                <button
+                  onClick={() => setConfirmando(true)}
+                  className="text-[10px] tracking-[0.15em] uppercase text-piedra hover:text-red-700 transition-colors"
+                >
+                  Eliminar
+                </button>
+              </span>
             )}
           </div>
         </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import NotasCliente from "@/components/admin/NotasCliente";
+import ClienteEditar from "@/components/admin/ClienteEditar";
 import { formatFecha, formatPrecio } from "@/lib/format";
 import type { Cliente, Pedido } from "@/lib/types";
 
@@ -52,18 +53,7 @@ export default async function ClienteDetallePage({
         </a>
       </div>
 
-      {c.direcciones?.length > 0 && (
-        <div className="mb-8">
-          <p className="text-[10px] tracking-[0.25em] uppercase text-piedra mb-2">
-            Direcciones
-          </p>
-          <ul className="space-y-1 text-sm font-light">
-            {c.direcciones.map((d, i) => (
-              <li key={i}>{d}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <ClienteEditar cliente={c} />
 
       <div className="mb-8">
         <p className="text-[10px] tracking-[0.25em] uppercase text-piedra mb-2">

@@ -7,6 +7,7 @@ export type Producto = {
   imagen: string | null;
   instagram_url: string | null;
   activo: boolean;
+  stock: number | null;
   created_at: string;
 };
 

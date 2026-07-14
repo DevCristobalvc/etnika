@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Header({
@@ -16,12 +17,18 @@ export default function Header({
         solid ? "relative bg-marfil border-b border-linea" : "absolute inset-x-0 top-0 z-20"
       }`}
     >
-      <div className="mx-auto max-w-6xl px-6 py-6 flex items-center justify-between">
-        <Link
-          href="/"
-          className={`font-display text-2xl tracking-[0.35em] uppercase ${texto}`}
-        >
-          Étnika
+      <div className="mx-auto max-w-6xl px-6 py-5 flex items-center justify-between">
+        <Link href="/" className={`flex items-center gap-3 ${texto}`}>
+          <Image
+            src="/emblema.png"
+            alt=""
+            width={40}
+            height={40}
+            className={onDark ? "" : "mix-blend-multiply"}
+          />
+          <span className="font-display text-2xl tracking-[0.35em] uppercase">
+            Étnika
+          </span>
         </Link>
         <nav className="flex items-center gap-8">
           <Link

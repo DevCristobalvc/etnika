@@ -25,6 +25,11 @@ export default function ProductCard({
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
         )}
+        {producto.stock === 0 && (
+          <span className="absolute bottom-3 left-3 bg-tinta/85 text-marfil px-3 py-1.5 text-[9px] tracking-[0.25em] uppercase">
+            Agotado
+          </span>
+        )}
       </div>
       <div className="pt-4 pb-2">
         <p className="text-[10px] tracking-[0.25em] uppercase text-piedra">

@@ -45,7 +45,18 @@ export default async function ProductosPage() {
               <p className="text-[10px] tracking-[0.15em] uppercase text-piedra mt-1">
                 {nombreCategoria(p.categoria)}
               </p>
-              <p className="text-xs text-tinta/70 mt-0.5">{formatPrecio(p.precio)}</p>
+              <p className="text-xs text-tinta/70 mt-0.5">
+                {formatPrecio(p.precio)}
+                {p.stock !== null && (
+                  <span
+                    className={`ml-3 text-[10px] tracking-[0.1em] uppercase ${
+                      p.stock === 0 ? "text-red-700" : "text-piedra"
+                    }`}
+                  >
+                    {p.stock === 0 ? "Agotado" : `Stock: ${p.stock}`}
+                  </span>
+                )}
+              </p>
             </div>
             <ProductoAcciones id={p.id} activo={p.activo} />
           </div>

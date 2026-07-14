@@ -21,16 +21,24 @@ export default async function ClientesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <h1 className="font-display font-light text-3xl">Clientes</h1>
-        {clientes.length > 0 && (
-          <a
-            href="/admin/clientes/export"
-            className="border border-linea px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase text-piedra hover:border-tinta hover:text-tinta transition-colors"
+        <div className="flex items-center gap-2">
+          {clientes.length > 0 && (
+            <a
+              href="/admin/clientes/export"
+              className="border border-linea px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase text-piedra hover:border-tinta hover:text-tinta transition-colors"
+            >
+              CSV
+            </a>
+          )}
+          <Link
+            href="/admin/clientes/nuevo"
+            className="bg-tinta text-marfil px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase hover:bg-carbon transition-colors"
           >
-            Exportar CSV
-          </a>
-        )}
+            Nueva
+          </Link>
+        </div>
       </div>
 
       {clientes.length === 0 ? (

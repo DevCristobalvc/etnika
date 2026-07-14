@@ -126,8 +126,42 @@ export async function crearPedidoManual(datos: {
     return { error: "No se pudo guardar el pedido." };
   }
 
+  // Descontar stock si el producto lo controla
+  const { data: prod } = await supabaseAdmin
+    .from("productos")
+    .select("stock")
+    .eq("id", datos.productoId)
+    .maybeSingle();
+  if (prod && prod.stock !== null) {
+    await supabaseAdmin
+      .from("productos")
+      .update({ stock: Math.max(0, prod.stock - datos.cantidad) })
+      .eq("id", datos.productoId);
+  }
+
   revalidatePath("/admin/pedidos");
+  revalidatePath("/");
   redirect("/admin/pedidos");
+}
+
+export async function actualizarPedido(
+  id: string,
+  datos: { cantidad: number; ubicacion: string; notas: string }
+): Promise<{ error: string } | null> {
+  await verificarSesion();
+  if (!datos.cantidad || datos.cantidad < 1) {
+    return { error: "La cantidad debe ser al menos 1." };
+  }
+  await supabaseAdmin
+    .from("pedidos")
+    .update({
+      cantidad: datos.cantidad,
+      ubicacion_texto: datos.ubicacion?.trim() || null,
+      notas: datos.notas?.trim() || null,
+    })
+    .eq("id", id);
+  revalidatePath("/admin/pedidos");
+  return null;
 }
 
 // ---------- Productos ----------
@@ -141,6 +175,8 @@ export async function guardarProducto(formData: FormData) {
   const precio = Number(formData.get("precio"));
   const categoria = (formData.get("categoria") as string)?.trim();
   const activo = formData.get("activo") === "on";
+  const stockRaw = (formData.get("stock") as string)?.trim();
+  const stock = stockRaw === "" || stockRaw == null ? null : Math.max(0, Number(stockRaw));
   const archivo = formData.get("imagen") as File | null;
 
   if (!nombre || !precio || !categoria) {
@@ -162,7 +198,7 @@ export async function guardarProducto(formData: FormData) {
     imagenUrl = pub.publicUrl;
   }
 
-  const registro = { nombre, descripcion, precio, categoria, activo, imagen: imagenUrl };
+  const registro = { nombre, descripcion, precio, categoria, activo, stock, imagen: imagenUrl };
 
   if (id) {
     await supabaseAdmin.from("productos").update(registro).eq("id", id);
@@ -196,6 +232,89 @@ export async function guardarNotasCliente(id: string, notas: string) {
   await verificarSesion();
   await supabaseAdmin.from("clientes").update({ notas }).eq("id", id);
   revalidatePath(`/admin/clientes/${id}`);
+}
+
+export async function crearCliente(datos: {
+  nombre: string;
+  whatsapp: string;
+  direccion: string;
+  notas: string;
+}): Promise<{ error: string } | null> {
+  await verificarSesion();
+
+  const nombre = datos.nombre?.trim();
+  const whatsapp = normalizarWhatsapp(datos.whatsapp);
+
+  if (!nombre) return { error: "El nombre es obligatorio." };
+  if (whatsapp.length < 12) {
+    return { error: "Revisa el número de WhatsApp (10 dígitos)." };
+  }
+
+  const { data: existente } = await supabaseAdmin
+    .from("clientes")
+    .select("id")
+    .eq("whatsapp", whatsapp)
+    .maybeSingle();
+  if (existente) {
+    return { error: "Ya existe una clienta con ese número de WhatsApp." };
+  }
+
+  const { error } = await supabaseAdmin.from("clientes").insert({
+    nombre,
+    whatsapp,
+    direcciones: datos.direccion?.trim() ? [datos.direccion.trim()] : [],
+    notas: datos.notas?.trim() || null,
+  });
+  if (error) return { error: "No se pudo crear la clienta." };
+
+  revalidatePath("/admin/clientes");
+  redirect("/admin/clientes");
+}
+
+export async function actualizarCliente(
+  id: string,
+  datos: { nombre: string; whatsapp: string; direcciones: string[] }
+): Promise<{ error: string } | null> {
+  await verificarSesion();
+
+  const nombre = datos.nombre?.trim();
+  const whatsapp = normalizarWhatsapp(datos.whatsapp);
+
+  if (!nombre) return { error: "El nombre es obligatorio." };
+  if (whatsapp.length < 12) {
+    return { error: "Revisa el número de WhatsApp (10 dígitos)." };
+  }
+
+  const { data: otro } = await supabaseAdmin
+    .from("clientes")
+    .select("id")
+    .eq("whatsapp", whatsapp)
+    .neq("id", id)
+    .maybeSingle();
+  if (otro) {
+    return { error: "Otra clienta ya tiene ese número de WhatsApp." };
+  }
+
+  await supabaseAdmin
+    .from("clientes")
+    .update({
+      nombre,
+      whatsapp,
+      direcciones: datos.direcciones.map((d) => d.trim()).filter(Boolean),
+    })
+    .eq("id", id);
+
+  revalidatePath("/admin/clientes");
+  revalidatePath(`/admin/clientes/${id}`);
+  return null;
+}
+
+export async function eliminarCliente(id: string) {
+  await verificarSesion();
+  await supabaseAdmin.from("pedidos").update({ cliente_id: null }).eq("cliente_id", id);
+  await supabaseAdmin.from("clientes").delete().eq("id", id);
+  revalidatePath("/admin/clientes");
+  redirect("/admin/clientes");
 }
 
 // ---------- Formulario ----------

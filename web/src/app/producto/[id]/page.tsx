@@ -90,11 +90,34 @@ export default async function ProductoPage({
             </div>
 
             <div className="mt-12 border-t border-linea pt-10">
-              <CompraAcciones
-                productoId={p.id}
-                preguntas={(preguntas ?? []) as PreguntaFormulario[]}
-                whatsappUrl={whatsappUrl}
-              />
+              {p.stock === 0 ? (
+                <div className="space-y-4">
+                  <p className="w-full text-center border border-linea bg-crema/60 py-5 text-[11px] tracking-[0.35em] uppercase text-piedra">
+                    Pieza agotada
+                  </p>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center border border-tinta py-5 text-[11px] tracking-[0.3em] uppercase hover:bg-tinta hover:text-marfil transition-colors duration-300"
+                  >
+                    Preguntar a Erika por disponibilidad
+                  </a>
+                </div>
+              ) : (
+                <>
+                  {p.stock !== null && p.stock <= 3 && (
+                    <p className="mb-5 text-[10px] tracking-[0.25em] uppercase text-arena">
+                      {p.stock === 1 ? "Última unidad disponible" : `Solo quedan ${p.stock} unidades`}
+                    </p>
+                  )}
+                  <CompraAcciones
+                    productoId={p.id}
+                    preguntas={(preguntas ?? []) as PreguntaFormulario[]}
+                    whatsappUrl={whatsappUrl}
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>

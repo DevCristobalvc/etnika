@@ -33,6 +33,25 @@ export async function crearPedido(
     return { ok: false, error: "La cantidad debe ser al menos 1." };
   }
 
+  // Control de stock: null = sin límite
+  const { data: prod } = await supabaseAdmin
+    .from("productos")
+    .select("stock")
+    .eq("id", productoId)
+    .maybeSingle();
+
+  if (prod && prod.stock !== null) {
+    if (prod.stock === 0) {
+      return { ok: false, error: "Esta pieza está agotada." };
+    }
+    if (datos.cantidad > prod.stock) {
+      return {
+        ok: false,
+        error: `Solo ${prod.stock === 1 ? "queda 1 unidad" : `quedan ${prod.stock} unidades`} disponibles.`,
+      };
+    }
+  }
+
   // Buscar o crear cliente por WhatsApp
   const { data: existente } = await supabaseAdmin
     .from("clientes")
@@ -80,6 +99,13 @@ export async function crearPedido(
 
   if (errPedido || !pedido) {
     return { ok: false, error: "No se pudo guardar el pedido. Intenta de nuevo." };
+  }
+
+  if (prod && prod.stock !== null) {
+    await supabaseAdmin
+      .from("productos")
+      .update({ stock: Math.max(0, prod.stock - datos.cantidad) })
+      .eq("id", productoId);
   }
 
   return { ok: true, pedidoId: pedido.id };
