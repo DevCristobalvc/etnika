@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useTransition } from "react";
+import { useState, useRef, useTransition } from "react";
 import { guardarProducto, eliminarProducto } from "@/app/admin/actions";
+import ImageCropper from "./ImageCropper";
 import type { Producto, Categoria } from "@/lib/types";
 
 export default function ProductoForm({
@@ -14,16 +15,33 @@ export default function ProductoForm({
 }) {
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<string | null>(producto?.imagen ?? null);
+  const [origenCrop, setOrigenCrop] = useState<string | null>(null);
   const [confirmando, setConfirmando] = useState(false);
   const [pendiente, startTransition] = useTransition();
+  const blobRef = useRef<Blob | null>(null);
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleArchivo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setPreview(URL.createObjectURL(file));
+    if (file) setOrigenCrop(URL.createObjectURL(file));
+    // Permite volver a elegir el mismo archivo
+    if (inputFileRef.current) inputFileRef.current.value = "";
+  };
+
+  const onCropListo = (blob: Blob, previewUrl: string) => {
+    blobRef.current = blob;
+    setPreview(previewUrl);
+    setOrigenCrop(null);
   };
 
   const handleSubmit = (formData: FormData) => {
     setError("");
+    // Sube el blob recortado y comprimido en vez del archivo original
+    if (blobRef.current) {
+      formData.set("imagen", blobRef.current, "producto.jpg");
+    } else {
+      formData.delete("imagen");
+    }
     startTransition(async () => {
       const res = await guardarProducto(formData);
       if (res?.error) setError(res.error);
@@ -31,45 +49,58 @@ export default function ProductoForm({
   };
 
   return (
-    <form action={handleSubmit} className="space-y-7">
-      {producto && <input type="hidden" name="id" value={producto.id} />}
-      {producto?.imagen && (
-        <input type="hidden" name="imagen_actual" value={producto.imagen} />
+    <>
+      {origenCrop && (
+        <ImageCropper
+          imagenSrc={origenCrop}
+          onListo={onCropListo}
+          onCancelar={() => setOrigenCrop(null)}
+        />
       )}
 
-      <div>
-        <label className="block text-[10px] tracking-[0.25em] uppercase text-piedra mb-3">
-          Imagen
-        </label>
-        <label className="block cursor-pointer">
-          <div className="relative aspect-[4/5] max-w-[240px] bg-crema border border-linea overflow-hidden">
-            {preview ? (
-              <Image
-                src={preview}
-                alt=""
-                fill
-                sizes="240px"
-                unoptimized={preview.startsWith("blob:")}
-                className="object-cover"
-              />
-            ) : (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] tracking-[0.2em] uppercase text-piedra">
-                Tocar para subir
-              </span>
-            )}
-          </div>
+      <form action={handleSubmit} className="space-y-7">
+        {producto && <input type="hidden" name="id" value={producto.id} />}
+        {producto?.imagen && (
+          <input type="hidden" name="imagen_actual" value={producto.imagen} />
+        )}
+
+        <div>
+          <label className="block text-[10px] tracking-[0.25em] uppercase text-piedra mb-3">
+            Imagen
+          </label>
+          <button
+            type="button"
+            onClick={() => inputFileRef.current?.click()}
+            className="block cursor-pointer w-full text-left"
+          >
+            <div className="relative aspect-[4/5] max-w-[240px] bg-crema border border-linea overflow-hidden">
+              {preview ? (
+                <Image
+                  src={preview}
+                  alt=""
+                  fill
+                  sizes="240px"
+                  unoptimized={preview.startsWith("blob:")}
+                  className="object-cover"
+                />
+              ) : (
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] tracking-[0.2em] uppercase text-piedra">
+                  Tocar para subir
+                </span>
+              )}
+            </div>
+          </button>
           <input
+            ref={inputFileRef}
             type="file"
-            name="imagen"
             accept="image/*"
             onChange={handleArchivo}
             className="hidden"
           />
-        </label>
-        <p className="mt-2 text-[10px] text-piedra">
-          Toca la imagen para cambiarla.
-        </p>
-      </div>
+          <p className="mt-2 text-[10px] text-piedra">
+            Toca la imagen para cambiarla. Podrás recortar qué parte se muestra.
+          </p>
+        </div>
 
       <div>
         <label className="block text-[10px] tracking-[0.25em] uppercase text-piedra mb-1">
@@ -202,6 +233,7 @@ export default function ProductoForm({
           )}
         </div>
       )}
-    </form>
+      </form>
+    </>
   );
 }
