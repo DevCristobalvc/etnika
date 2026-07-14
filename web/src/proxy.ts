@@ -1,15 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verificarSesionAdmin } from "@/lib/admin-token";
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isPanel = pathname.startsWith("/admin/") && pathname !== "/admin";
-  const session = request.cookies.get("admin_session")?.value;
+  // /admin = login, /admin/callback = aterrizaje del enlace mágico
+  const esPublica = pathname === "/admin" || pathname === "/admin/callback";
+  const esPanel = pathname.startsWith("/admin") && !esPublica;
 
-  if (isPanel && session !== "1") {
+  const cookie = request.cookies.get("admin_session")?.value;
+  const autenticado = await verificarSesionAdmin(cookie);
+
+  if (esPanel && !autenticado) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
-  if (pathname === "/admin" && session === "1") {
+  if (pathname === "/admin" && autenticado) {
     return NextResponse.redirect(new URL("/admin/pedidos", request.url));
   }
   return NextResponse.next();

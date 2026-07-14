@@ -5,18 +5,48 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { normalizarWhatsapp } from "@/lib/format";
+import { firmarSesionAdmin, verificarSesionAdmin } from "@/lib/admin-token";
+import { ADMIN_EMAIL } from "@/lib/admin-auth";
 import type { EstadoPedido } from "@/lib/types";
 
 const ADMIN_USER = "Erika";
 const ADMIN_PASS = "erika123";
 
+async function darAccesoAdmin() {
+  const store = await cookies();
+  store.set("admin_session", await firmarSesionAdmin(), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: true,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+}
+
 async function verificarSesion() {
   const store = await cookies();
-  if (store.get("admin_session")?.value !== "1") {
+  if (!(await verificarSesionAdmin(store.get("admin_session")?.value))) {
     throw new Error("No autorizado");
   }
 }
 
+// Entrada por enlace mágico: el navegador pasa el token de Supabase; el
+// servidor lo valida y confirma que el correo es el de Erika.
+export async function entrarConMagicLink(
+  accessToken: string
+): Promise<{ error: string } | null> {
+  const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
+  if (error || !data.user) {
+    return { error: "Enlace inválido o vencido." };
+  }
+  if (data.user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+    return { error: "Este correo no tiene acceso al panel." };
+  }
+  await darAccesoAdmin();
+  return null;
+}
+
+// Login por contraseña (respaldo mientras se confirma el correo).
 export async function login(
   _prev: { error: string } | null,
   formData: FormData
@@ -28,13 +58,7 @@ export async function login(
     return { error: "Credenciales incorrectas." };
   }
 
-  const store = await cookies();
-  store.set("admin_session", "1", {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
+  await darAccesoAdmin();
   redirect("/admin/pedidos");
 }
 
