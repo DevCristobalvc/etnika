@@ -35,15 +35,19 @@ async function verificarSesion() {
 export async function entrarConMagicLink(
   accessToken: string
 ): Promise<{ error: string } | null> {
-  const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
-  if (error || !data.user) {
-    return { error: "Enlace inválido o vencido." };
+  try {
+    const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
+    if (error || !data.user) {
+      return { error: "Enlace inválido o vencido." };
+    }
+    if (data.user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      return { error: "Este correo no tiene acceso al panel." };
+    }
+    await darAccesoAdmin();
+    return null;
+  } catch {
+    return { error: "No pudimos verificar tu acceso. Intenta de nuevo." };
   }
-  if (data.user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-    return { error: "Este correo no tiene acceso al panel." };
-  }
-  await darAccesoAdmin();
-  return null;
 }
 
 // Login por contraseña (respaldo mientras se confirma el correo).

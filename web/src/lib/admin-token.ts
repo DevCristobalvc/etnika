@@ -8,14 +8,15 @@ function getSecret(): string {
 
 async function hmac(mensaje: string): Promise<string> {
   const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey(
+  const subtle = globalThis.crypto.subtle;
+  const key = await subtle.importKey(
     "raw",
     enc.encode(getSecret()),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"]
   );
-  const firma = await crypto.subtle.sign("HMAC", key, enc.encode(mensaje));
+  const firma = await subtle.sign("HMAC", key, enc.encode(mensaje));
   return Array.from(new Uint8Array(firma))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");

@@ -27,13 +27,17 @@ export default function AdminCallback() {
     }
 
     (async () => {
-      const res = await entrarConMagicLink(accessToken);
-      if (res?.error) {
-        setError(res.error);
-      } else {
-        // Limpia el token de la URL y entra al panel.
-        window.history.replaceState(null, "", "/admin/callback");
-        router.replace("/admin/pedidos");
+      try {
+        const res = await entrarConMagicLink(accessToken);
+        if (res?.error) {
+          setError(res.error);
+        } else {
+          // Limpia el token de la URL y entra al panel.
+          window.history.replaceState(null, "", "/admin/callback");
+          router.replace("/admin/pedidos");
+        }
+      } catch {
+        setError("No pudimos verificar tu acceso. Intenta de nuevo.");
       }
     })();
   }, [router]);
