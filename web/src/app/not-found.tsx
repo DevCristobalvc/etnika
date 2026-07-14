@@ -19,7 +19,7 @@ export default function NotFound() {
             cambiado.
           </p>
           <Link
-            href="/#coleccion"
+            href="/coleccion"
             className="inline-block mt-10 border border-tinta px-10 py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-tinta hover:text-marfil transition-colors duration-300"
           >
             Ver la colección

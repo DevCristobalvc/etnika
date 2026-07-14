@@ -28,7 +28,7 @@ export default function Header({
         </Link>
         <nav className="flex items-center gap-8">
           <Link
-            href="/#coleccion"
+            href="/coleccion"
             className={`text-[11px] tracking-[0.25em] uppercase transition-colors ${textoSuave}`}
           >
             Colección

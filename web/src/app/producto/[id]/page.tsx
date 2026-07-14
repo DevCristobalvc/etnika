@@ -53,7 +53,7 @@ export default async function ProductoPage({
             Inicio
           </Link>
           <span className="mx-3 text-linea">/</span>
-          <Link href="/#coleccion" className="hover:text-tinta transition-colors">
+          <Link href="/coleccion" className="hover:text-tinta transition-colors">
             Colección
           </Link>
           <span className="mx-3 text-linea">/</span>

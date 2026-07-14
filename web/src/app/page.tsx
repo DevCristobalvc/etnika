@@ -21,11 +21,12 @@ export default async function Home() {
     obtenerConfig(),
   ]);
 
-  const productos = (data ?? []) as Producto[];
+  const todos = (data ?? []) as Producto[];
+  const productos = todos.slice(0, 12);
   const etiquetas = new Map(
     ((cats ?? []) as { slug: string; nombre: string }[]).map((c) => [c.slug, c.nombre])
   );
-  const categorias = [...new Set(productos.map((p) => p.categoria))];
+  const categorias = [...new Set(todos.map((p) => p.categoria))];
   const parrafos = (config.historia ?? "").split(/\n\s*\n/).filter(Boolean);
 
   return (
@@ -105,6 +106,17 @@ export default async function Home() {
             />
           ))}
         </div>
+
+        {todos.length > productos.length && (
+          <div className="mt-16 text-center">
+            <Link
+              href="/coleccion"
+              className="inline-block border border-tinta px-12 py-4 text-[11px] tracking-[0.3em] uppercase hover:bg-tinta hover:text-marfil transition-colors duration-300"
+            >
+              Ver toda la colección ({todos.length} piezas)
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* Nosotras — historia de la marca */}
