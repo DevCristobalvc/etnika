@@ -1,7 +1,16 @@
 import Link from "next/link";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import ProductoForm from "@/components/admin/ProductoForm";
+import type { Categoria } from "@/lib/types";
 
-export default function NuevoProductoPage() {
+export const dynamic = "force-dynamic";
+
+export default async function NuevoProductoPage() {
+  const { data: cats } = await supabaseAdmin
+    .from("categorias")
+    .select("*")
+    .order("orden", { ascending: true });
+
   return (
     <>
       <Link
@@ -11,7 +20,7 @@ export default function NuevoProductoPage() {
         ← Productos
       </Link>
       <h1 className="font-display font-light text-3xl mt-4 mb-8">Nuevo producto</h1>
-      <ProductoForm />
+      <ProductoForm categorias={(cats ?? []) as Categoria[]} />
     </>
   );
 }

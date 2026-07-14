@@ -211,6 +211,90 @@ export async function guardarProducto(formData: FormData) {
   redirect("/admin/productos");
 }
 
+export async function ajustarStock(id: string, delta: number) {
+  await verificarSesion();
+  const { data: prod } = await supabaseAdmin
+    .from("productos")
+    .select("stock")
+    .eq("id", id)
+    .maybeSingle();
+  if (!prod || prod.stock === null) return;
+  await supabaseAdmin
+    .from("productos")
+    .update({ stock: Math.max(0, prod.stock + delta) })
+    .eq("id", id);
+  revalidatePath("/admin/productos");
+  revalidatePath("/");
+}
+
+// ---------- Categorías ----------
+
+function slugificar(nombre: string): string {
+  return nombre
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export async function crearCategoria(nombre: string): Promise<{ error: string } | null> {
+  await verificarSesion();
+  const limpio = nombre?.trim();
+  if (!limpio) return { error: "Escribe el nombre de la categoría." };
+  const slug = slugificar(limpio);
+  if (!slug) return { error: "Nombre de categoría inválido." };
+
+  const { data: existente } = await supabaseAdmin
+    .from("categorias")
+    .select("slug")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (existente) return { error: "Ya existe una categoría con ese nombre." };
+
+  const { count } = await supabaseAdmin
+    .from("categorias")
+    .select("*", { count: "exact", head: true });
+  await supabaseAdmin
+    .from("categorias")
+    .insert({ slug, nombre: limpio, orden: (count ?? 0) + 1 });
+
+  revalidatePath("/admin/categorias");
+  revalidatePath("/admin/productos");
+  revalidatePath("/");
+  return null;
+}
+
+export async function renombrarCategoria(
+  slug: string,
+  nombre: string
+): Promise<{ error: string } | null> {
+  await verificarSesion();
+  const limpio = nombre?.trim();
+  if (!limpio) return { error: "El nombre no puede quedar vacío." };
+  await supabaseAdmin.from("categorias").update({ nombre: limpio }).eq("slug", slug);
+  revalidatePath("/admin/categorias");
+  revalidatePath("/");
+  return null;
+}
+
+export async function eliminarCategoria(slug: string): Promise<{ error: string } | null> {
+  await verificarSesion();
+  const { count } = await supabaseAdmin
+    .from("productos")
+    .select("*", { count: "exact", head: true })
+    .eq("categoria", slug);
+  if ((count ?? 0) > 0) {
+    return {
+      error: `Hay ${count} producto${count === 1 ? "" : "s"} en esta categoría. Muévelos primero.`,
+    };
+  }
+  await supabaseAdmin.from("categorias").delete().eq("slug", slug);
+  revalidatePath("/admin/categorias");
+  revalidatePath("/");
+  return null;
+}
+
 export async function alternarProductoActivo(id: string, activo: boolean) {
   await verificarSesion();
   await supabaseAdmin.from("productos").update({ activo }).eq("id", id);

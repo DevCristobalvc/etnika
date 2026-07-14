@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import ProductoForm from "@/components/admin/ProductoForm";
-import type { Producto } from "@/lib/types";
+import type { Producto, Categoria } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +12,10 @@ export default async function EditarProductoPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { data } = await supabaseAdmin
-    .from("productos")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data }, { data: cats }] = await Promise.all([
+    supabaseAdmin.from("productos").select("*").eq("id", id).maybeSingle(),
+    supabaseAdmin.from("categorias").select("*").order("orden", { ascending: true }),
+  ]);
 
   if (!data) notFound();
 
@@ -29,7 +28,10 @@ export default async function EditarProductoPage({
         ← Productos
       </Link>
       <h1 className="font-display font-light text-3xl mt-4 mb-8">Editar producto</h1>
-      <ProductoForm producto={data as Producto} />
+      <ProductoForm
+        producto={data as Producto}
+        categorias={(cats ?? []) as Categoria[]}
+      />
     </>
   );
 }

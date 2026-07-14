@@ -6,9 +6,11 @@ import { formatPrecio, nombreCategoria } from "@/lib/format";
 export default function ProductCard({
   producto,
   destacado = false,
+  categoriaNombre,
 }: {
   producto: Producto;
   destacado?: boolean;
+  categoriaNombre?: string;
 }) {
   return (
     <Link
@@ -33,7 +35,7 @@ export default function ProductCard({
       </div>
       <div className="pt-4 pb-2">
         <p className="text-[10px] tracking-[0.25em] uppercase text-piedra">
-          {nombreCategoria(producto.categoria)}
+          {categoriaNombre ?? nombreCategoria(producto.categoria)}
         </p>
         <h3 className="font-display text-lg mt-1 leading-snug">{producto.nombre}</h3>
         <p className="text-xs tracking-[0.15em] text-tinta/60 mt-1">

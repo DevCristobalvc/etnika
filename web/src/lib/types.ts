@@ -38,6 +38,12 @@ export type Pedido = {
   producto?: Producto | null;
 };
 
+export type Categoria = {
+  slug: string;
+  nombre: string;
+  orden: number;
+};
+
 export type PreguntaFormulario = {
   id: string;
   label: string;

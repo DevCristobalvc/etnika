@@ -3,10 +3,15 @@
 import Image from "next/image";
 import { useState, useTransition } from "react";
 import { guardarProducto, eliminarProducto } from "@/app/admin/actions";
-import { CATEGORIAS } from "@/lib/format";
-import type { Producto } from "@/lib/types";
+import type { Producto, Categoria } from "@/lib/types";
 
-export default function ProductoForm({ producto }: { producto?: Producto }) {
+export default function ProductoForm({
+  producto,
+  categorias,
+}: {
+  producto?: Producto;
+  categorias: Categoria[];
+}) {
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<string | null>(producto?.imagen ?? null);
   const [confirmando, setConfirmando] = useState(false);
@@ -110,19 +115,21 @@ export default function ProductoForm({ producto }: { producto?: Producto }) {
           <label className="block text-[10px] tracking-[0.25em] uppercase text-piedra mb-1">
             Categoría
           </label>
-          <input
-            type="text"
+          <select
             name="categoria"
-            list="categorias"
             defaultValue={producto?.categoria ?? ""}
-            className="input-line"
             required
-          />
-          <datalist id="categorias">
-            {Object.keys(CATEGORIAS).map((c) => (
-              <option key={c} value={c} />
+            className="w-full bg-transparent border-0 border-b border-linea py-3 text-sm font-light focus:outline-none focus:border-tinta"
+          >
+            <option value="" disabled>
+              Seleccionar…
+            </option>
+            {categorias.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.nombre}
+              </option>
             ))}
-          </datalist>
+          </select>
         </div>
       </div>
 

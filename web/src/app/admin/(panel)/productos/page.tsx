@@ -17,14 +17,22 @@ export default async function ProductosPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <h1 className="font-display font-light text-3xl">Productos</h1>
-        <Link
-          href="/admin/productos/nuevo"
-          className="bg-tinta text-marfil px-5 py-3 text-[10px] tracking-[0.2em] uppercase hover:bg-carbon transition-colors"
-        >
-          Nuevo
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/categorias"
+            className="border border-linea px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase text-piedra hover:border-tinta hover:text-tinta transition-colors"
+          >
+            Categorías
+          </Link>
+          <Link
+            href="/admin/productos/nuevo"
+            className="bg-tinta text-marfil px-4 py-2.5 text-[10px] tracking-[0.2em] uppercase hover:bg-carbon transition-colors"
+          >
+            Nuevo
+          </Link>
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -58,7 +66,7 @@ export default async function ProductosPage() {
                 )}
               </p>
             </div>
-            <ProductoAcciones id={p.id} activo={p.activo} />
+            <ProductoAcciones id={p.id} activo={p.activo} stock={p.stock} />
           </div>
         ))}
       </div>

@@ -31,6 +31,13 @@ export default async function ProductoPage({
   if (!producto) notFound();
   const p = producto as Producto;
 
+  const { data: cat } = await supabase
+    .from("categorias")
+    .select("nombre")
+    .eq("slug", p.categoria)
+    .maybeSingle();
+  const categoriaNombre = cat?.nombre ?? nombreCategoria(p.categoria);
+
   const whatsappUrl = waLink(
     config.whatsapp,
     `Hola Erika, me interesa el ${p.nombre} (${formatPrecio(p.precio)}).`
@@ -69,7 +76,7 @@ export default async function ProductoPage({
 
           <div>
             <p className="text-[11px] tracking-[0.35em] uppercase text-piedra">
-              {nombreCategoria(p.categoria)}
+              {categoriaNombre}
             </p>
             <h1 className="font-display font-light text-4xl md:text-5xl mt-3 leading-tight">
               {p.nombre}

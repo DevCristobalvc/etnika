@@ -11,16 +11,20 @@ import type { Producto } from "@/lib/types";
 export const revalidate = 60;
 
 export default async function Home() {
-  const [{ data }, config] = await Promise.all([
+  const [{ data }, { data: cats }, config] = await Promise.all([
     supabase
       .from("productos")
       .select("*")
       .eq("activo", true)
       .order("created_at", { ascending: true }),
+    supabase.from("categorias").select("*").order("orden", { ascending: true }),
     obtenerConfig(),
   ]);
 
   const productos = (data ?? []) as Producto[];
+  const etiquetas = new Map(
+    ((cats ?? []) as { slug: string; nombre: string }[]).map((c) => [c.slug, c.nombre])
+  );
   const categorias = [...new Set(productos.map((p) => p.categoria))];
   const parrafos = (config.historia ?? "").split(/\n\s*\n/).filter(Boolean);
 
@@ -29,7 +33,7 @@ export default async function Home() {
       <Header />
 
       {/* Hero — texto editorial y portada completa, sin recortes */}
-      <section className="pt-32 md:pt-40">
+      <section className="pt-28 md:pt-32">
         <div className="mx-auto max-w-6xl px-6 text-center animate-fade-up">
           <p className="text-[11px] tracking-[0.45em] uppercase text-piedra mb-5">
             {config.tagline ?? "Accesorios y Marroquinería"}
@@ -49,15 +53,16 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="mx-auto max-w-6xl px-6 mt-14 md:mt-20">
-          {/* Contenedor con el mismo aspecto de la foto: se ve entera */}
-          <div className="relative w-full aspect-[1080/719] bg-crema">
+        <div className="mx-auto max-w-6xl px-6 mt-10 md:mt-12 pb-4">
+          {/* Mismo aspecto de la foto (entera) y altura contenida para que
+              no se corte con el borde de la pantalla */}
+          <div className="relative mx-auto w-full aspect-[1080/719] md:w-auto md:h-[54svh] bg-crema">
             <Image
               src="/portada.jpg"
               alt="Erika en la boutique Étnika"
               fill
               priority
-              sizes="(min-width: 1152px) 1104px, 100vw"
+              sizes="(min-width: 768px) 880px, 100vw"
               className="object-cover"
             />
           </div>
@@ -84,7 +89,7 @@ export default async function Home() {
                 key={c}
                 className="text-[11px] tracking-[0.25em] uppercase text-tinta/50"
               >
-                {nombreCategoria(c)}
+                {etiquetas.get(c) ?? nombreCategoria(c)}
               </span>
             ))}
           </div>
@@ -92,7 +97,12 @@ export default async function Home() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-12">
           {productos.map((p, i) => (
-            <ProductCard key={p.id} producto={p} destacado={i === 0} />
+            <ProductCard
+              key={p.id}
+              producto={p}
+              destacado={i === 0}
+              categoriaNombre={etiquetas.get(p.categoria)}
+            />
           ))}
         </div>
       </section>
